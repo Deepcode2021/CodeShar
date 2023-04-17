@@ -1,46 +1,16 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html>
-<head>
-	<title>File Upload and Download</title>
-</head>
-<body>
-	<h1>File Upload and Download</h1>
-
-	<!-- File upload form -->
-	<form action="/upload" method="POST" enctype="multipart/form-data">
-		<label for="file">Choose a file to upload:</label><br>
-		<input type="file" id="file" name="file"><br>
-		<input type="submit" value="Upload">
-	</form>
-
-	<!-- List of uploaded files -->
-	<h2>Uploaded Files:</h2>
-	<ul>
-		{{#each files}}
-			<li><a href="/download/{{this}}">{{this}}</a></li>
-		{{/each}}
-	</ul>
-
-	<!-- File download link (hidden) -->
-	<a id="download-link" href=""></a>
-
-	<script>
-		// Download file when link is clicked
-		document.addEventListener("click", function(event) {
-			if (event.target.tagName === "A" && event.target.getAttribute("href").startsWith("/download/")) {
-				event.preventDefault();
-				var fileUrl = event.target.getAttribute("href");
-				fetch(fileUrl).then(function(response) {
-					return response.blob();
-				}).then(function(blob) {
-					var url = URL.createObjectURL(blob);
-					var link = document.getElementById("download-link");
-					link.setAttribute("href", url);
-					link.setAttribute("download", event.target.textContent);
-					link.click();
-				});
-			}
-		});
-	</script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+  </head>
+  <body>
+    <h3>Upload a file:</h3>
+    <form action="/api/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="fileToUpload">
+      <br><br>
+      <input type="submit" value="Upload">
+    </form>
+  </body>
 </html>
