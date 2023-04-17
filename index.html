@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,11 +5,68 @@
     <title>File Upload</title>
   </head>
   <body>
-    <h3>Upload a file:</h3>
-    <form action="/api/upload" method="post" enctype="multipart/form-data">
-      <input type="file" name="fileToUpload">
+    <h1>Upload a File</h1>
+    <form onsubmit="submitForm(event)">
+      <input type="file" id="fileInput">
       <br><br>
       <input type="submit" value="Upload">
     </form>
+    <br>
+    <h2>Uploaded Files:</h2>
+    <ul id="fileList">
+      <!-- This is where the links to uploaded files will be generated -->
+    </ul>
+    <script>
+      async function submitForm(event) {
+        event.preventDefault();
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) {
+          alert('Please select a file to upload.');
+          return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+          const fileList = document.getElementById('fileList');
+          const listItem = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = result.url;
+          link.innerText = result.name;
+          listItem.appendChild(link);
+          fileList.appendChild(listItem);
+        } catch (error) {
+          console.error(error);
+          alert('There was an error uploading your file.');
+        }
+      }
+
+      async function loadFiles() {
+        try {
+          const response = await fetch('/api/list');
+          const files = await response.json();
+          const fileList = document.getElementById('fileList');
+          fileList.innerHTML = '';
+          files.forEach(file => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = file.url;
+            link.innerText = file.name;
+            listItem.appendChild(link);
+            fileList.appendChild(listItem);
+          });
+        } catch (error) {
+          console.error(error);
+          alert('There was an error loading the list of uploaded files.');
+        }
+      }
+
+      loadFiles();
+    </script>
   </body>
 </html>
